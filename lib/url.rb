@@ -25,7 +25,13 @@ class URL
     { error: false, sid: @sid, url: @url, stats: @stats }
   end
 
-  def expand
+  def expand(redis)
+    return if @sid.nil?
+
+    @url = expand_sid(redis, @sid)
+    return if @url.nil?
+
+    { error: false, sid: @sid, url: @url }
   end
 
   private
@@ -49,5 +55,9 @@ class URL
       redis.sadd('urls', url)
       redis.sadd('sids', sid)
     end
+  end
+
+  def expand_sid(redis, sid)
+    redis.hget("sid:#{sid}", 'url')
   end
 end

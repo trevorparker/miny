@@ -1,6 +1,7 @@
 require 'grape'
 require 'redis'
 require './lib/url'
+require './lib/user'
 
 # Miny API endpoint
 class API < Grape::API
@@ -10,6 +11,13 @@ class API < Grape::API
   helpers do
     def redis
       @redis ||= Redis.new(port: 6379, db: 1)
+    end
+
+    def throttle_filter!
+      @user ||= User.new(ip: @env['REMOTE_ADDR'])
+      if @user.throttle(redis)
+        error!({ error: true, errortext: 'Too many requests' }, 429)
+      end
     end
   end
 
@@ -21,7 +29,11 @@ class API < Grape::API
     end
     route_param :sid do
       get do
-        error!({ error: true, errortext: 'Not implemented' }, 501)
+        throttle_filter!
+        url = URL.new(sid: params[:sid])
+        response = url.expand(redis)
+        return response unless response.nil?
+        error!({ error: true, errortext: 'Gone' }, 410)
       end
     end
 
@@ -30,10 +42,11 @@ class API < Grape::API
       requires :url, type: String, desc: 'A valid URL to shorten'
     end
     post do
+      throttle_filter!
       url = URL.new(url: params[:url])
       response = url.shorten(redis, @env['REMOTE_ADDR'])
       return response unless response.nil?
-      error!({ error: true, errortext: 'Not implemented' }, 501)
+      error!({ error: true, errortext: 'Internal server error' }, 500)
     end
 
   end

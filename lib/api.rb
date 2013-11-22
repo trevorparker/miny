@@ -1,9 +1,17 @@
 require 'grape'
+require 'redis'
+require './lib/url'
 
 # Miny API endpoint
 class API < Grape::API
   version 'v1', using: :path
   format :json
+
+  helpers do
+    def redis
+      @redis ||= Redis.new(port: 6379, db: 1)
+    end
+  end
 
   resource :url do
 
@@ -22,6 +30,9 @@ class API < Grape::API
       requires :url, type: String, desc: 'A valid URL to shorten'
     end
     post do
+      url = URL.new(url: params[:url])
+      response = url.shorten(redis, @env['REMOTE_ADDR'])
+      return response unless response.nil?
       error!({ error: true, errortext: 'Not implemented' }, 501)
     end
 

@@ -32,10 +32,11 @@ describe API do
   end
 
   describe 'POST /v1/url' do
-    it 'responds with 501 not implemented' do
+    it 'responds with 201 created' do
       post '/v1/url', url: 'http://example.com'
-      last_response.status.should == 501
-      JSON.parse(last_response.body)['errortext'].should == 'Not implemented'
+      last_response.status.should == 201
+      JSON.parse(last_response.body)['error'].should == false
+      JSON.parse(last_response.body)['url'].should == 'http://example.com'
     end
   end
 end

@@ -13,10 +13,15 @@ class API < Grape::API
       @redis ||= Redis.new(port: 6379, db: 1)
     end
 
-    def throttle_filter!
-      @user ||= User.new(ip: @env['REMOTE_ADDR'])
-      if @user.throttle(redis)
+    def user
+      @user ||= User.new(ip: @env['REMOTE_ADDR'], key: params[:key])
+    end
+
+    def filter
+      if user.filter(redis)
         error!({ error: true, errortext: 'Too many requests' }, 429)
+      elsif !params[:key].nil? && !user.authorized?(redis)
+        error!({ error: true, errortext: 'Invalid API key' }, 403)
       end
     end
   end
@@ -29,7 +34,7 @@ class API < Grape::API
     end
     route_param :sid do
       get do
-        throttle_filter!
+        filter
         url = URL.new(sid: params[:sid])
         response = url.expand(redis)
         return response unless response.nil?
@@ -42,7 +47,7 @@ class API < Grape::API
       requires :url, type: String, desc: 'A valid URL to shorten'
     end
     post do
-      throttle_filter!
+      filter
       url = URL.new(url: params[:url])
       response = url.shorten(redis, @env['REMOTE_ADDR'])
       return response unless response.nil?
@@ -64,5 +69,25 @@ class API < Grape::API
       }
     end
     return spec
+  end
+
+  resource :user do
+    desc 'Request a time-sensitive registration token'
+    get :token do
+      response = user.token(redis)
+      return response unless response.nil?
+      error!({ error: true, errortext: 'Unable to generate token' }, 400)
+    end
+
+    desc 'Register a new user'
+    params do
+      requires :token, type: String, desc: 'A valid registration token'
+    end
+    post :register do
+      filter
+      response = user.register!(redis, params[:token])
+      return response unless response.nil?
+      error!({ error: true, errortext: 'Unable to register user' }, 400)
+    end
   end
 end

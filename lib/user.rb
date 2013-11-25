@@ -1,70 +1,60 @@
 # This class handles user authentication and request throttling.
 class User
+  attr_reader :key, :max_requests
+
   def initialize(args)
-    @max_requests_hour = 100
-    @max_requests_minute = 10
     args.each do |k, v|
       instance_variable_set("@#{k}", v) unless v.nil?
     end
+
+    @max_requests = { hour: 100, minute: 10 }
   end
 
-  def filter(redis)
-    return true if @ip.nil?
-    hour_tokens, minute_tokens, _, _ = record_request(redis, @ip)
+  def register!(token)
+    return unless valid_token?(token)
 
-    if authorized?(redis)
-      @max_requests_hour = 500
-      @max_requests_minute = 50
-    end
-
-    hour_tokens > @max_requests_hour || minute_tokens > @max_requests_minute
-  end
-
-  def token(redis)
-    token = SecureRandom.uuid
-    redis.set("token:#{token}", 1)
-    redis.expire("token:#{token}", 60)
-
-    { error: false, token: token }
-  end
-
-  def register!(redis, token)
-    return unless valid_token?(redis, token)
-    redis.del("token:#{token}")
-
-    @key ||= generate_key(redis)
-    result = redis.set("apikey:#{@key}", 1)
+    @redis.del("token:#{token}")
+    @key ||= generate_key
+    result = @redis.set("apikey:#{@key}", 1)
     return if result.nil?
 
     { error: false, key: @key }
   end
 
-  def authorized?(redis)
-    @authorized ||= redis.exists("apikey:#{@key}")
+  def authorized?
+    @authorized ||= @redis.exists("apikey:#{@key}")
+  end
+
+  def throttled?
+    return true if @ip.nil?
+
+    hour_reqs, minute_reqs, _, _ = record_request(@ip)
+    @max_requests = { hour: 500, minute: 50 } if authorized?
+    hour_reqs > @max_requests[:hour] || minute_reqs > @max_requests[:minute]
   end
 
   private
 
-  def record_request(redis, ip)
-    time_now = Time.now.to_i
-    epoch_hour = time_now / 3600
-    epoch_minute = time_now / 60
-    redis.pipelined do
-      redis.zincrby("traffic:#{epoch_hour}", 1, ip)
-      redis.zincrby("traffic:#{epoch_minute}", 1, ip)
-      redis.expire("traffic:#{epoch_hour}", 3600)
-      redis.expire("traffic:#{epoch_minute}", 60)
+  def record_request(ip)
+    now = Time.now.to_i
+    epoch_hour = now / 3600
+    epoch_minute = now / 60
+    @redis.pipelined do
+      @redis.zincrby("traffic:#{epoch_hour}", 1, ip)
+      @redis.zincrby("traffic:#{epoch_minute}", 1, ip)
+      @redis.expire("traffic:#{epoch_hour}", 3600)
+      @redis.expire("traffic:#{epoch_minute}", 60)
     end
   end
 
-  def generate_key(redis, key = '')
+  def generate_key(key = '')
     loop do
       key = SecureRandom.hex
-      return key unless redis.exists("apikey:#{key}")
+      return key unless @redis.exists("apikey:#{key}")
     end
   end
 
-  def valid_token?(redis, token = '')
-    redis.exists("token:#{token}")
+  def valid_token?(token = '')
+    @redis.exists("token:#{token}")
   end
 end

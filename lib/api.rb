@@ -14,15 +14,26 @@ class API < Grape::API
     end
 
     def user
-      @user ||= User.new(ip: @env['REMOTE_ADDR'], key: params[:key])
+      @user ||= User.new(
+        ip: @env['REMOTE_ADDR'],
+        key: params[:key],
+        redis: redis
+      )
     end
 
     def filter
-      if user.filter(redis)
+      if user.throttled?
         error!({ error: true, errortext: 'Too many requests' }, 429)
-      elsif !params[:key].nil? && !user.authorized?(redis)
+      elsif !params[:key].nil? && !user.authorized?
         error!({ error: true, errortext: 'Invalid API key' }, 403)
       end
+    end
+
+    def generate_token(ttl = 60)
+      token = SecureRandom.uuid
+      redis.set("token:#{token}", 1)
+      redis.expire("token:#{token}", ttl)
+      token
     end
   end
 
@@ -35,8 +46,8 @@ class API < Grape::API
     route_param :sid do
       get do
         filter
-        url = URL.new(sid: params[:sid])
-        response = url.expand(redis)
+        url = URL.new(sid: params[:sid], redis: redis)
+        response = url.expand
         return response unless response.nil?
         error!({ error: true, errortext: 'Gone' }, 410)
       end
@@ -48,10 +59,35 @@ class API < Grape::API
     end
     post do
       filter
-      url = URL.new(url: params[:url])
-      response = url.shorten(redis, @env['REMOTE_ADDR'])
+      url = URL.new(url: params[:url], redis: redis)
+      response = url.shorten(@env['REMOTE_ADDR'])
       return response unless response.nil?
       error!({ error: true, errortext: 'Internal server error' }, 500)
+    end
+
+  end
+
+  resource :user do
+
+    desc 'Request a time-sensitive registration token'
+    get :token do
+      token = generate_token
+      if token.nil?
+        error!({ error: true, errortext: 'Unable to generate token' }, 400)
+      else
+        { error: false, token: token }
+      end
+    end
+
+    desc 'Register a new user'
+    params do
+      requires :token, type: String, desc: 'A valid registration token'
+    end
+    post :register do
+      filter
+      response = user.register!(params[:token])
+      return response unless response.nil?
+      error!({ error: true, errortext: 'Unable to register user' }, 400)
     end
 
   end
@@ -68,26 +104,6 @@ class API < Grape::API
         params: route.route_params
       }
     end
-    return spec
-  end
-
-  resource :user do
-    desc 'Request a time-sensitive registration token'
-    get :token do
-      response = user.token(redis)
-      return response unless response.nil?
-      error!({ error: true, errortext: 'Unable to generate token' }, 400)
-    end
-
-    desc 'Register a new user'
-    params do
-      requires :token, type: String, desc: 'A valid registration token'
-    end
-    post :register do
-      filter
-      response = user.register!(redis, params[:token])
-      return response unless response.nil?
-      error!({ error: true, errortext: 'Unable to register user' }, 400)
-    end
+    spec
   end
 end

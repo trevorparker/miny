@@ -1,6 +1,6 @@
 # This class handles user authentication and request throttling.
 class User
-  attr_reader :key, :max_requests
+  attr_reader :key, :max_requests, :ip, :user_agent, :referrer
 
   def initialize(args)
     args.each do |k, v|

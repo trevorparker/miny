@@ -1,4 +1,3 @@
-# Load the Sinatra app
 require File.dirname(__FILE__) + '/../lib/api.rb'
 
 require 'rspec'

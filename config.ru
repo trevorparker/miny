@@ -1,4 +1,4 @@
-require './lib/app.rb'
-require './lib/api.rb'
+require './app'
+require './lib/api'
 
 run Rack::Cascade.new [API, App]

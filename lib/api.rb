@@ -15,7 +15,9 @@ class API < Grape::API
 
     def user
       @user ||= User.new(
-        ip: @env['REMOTE_ADDR'],
+        ip: request.ip,
+        user_agent: request.user_agent,
+        referrer: request.referrer,
         key: params[:key],
         redis: redis
       )
@@ -62,7 +64,7 @@ class API < Grape::API
       url = URL.new(url: params[:url], redis: redis)
       response = url.shorten(@env['REMOTE_ADDR'])
       return response unless response.nil?
-      error!({ error: true, errortext: 'Internal server error' }, 500)
+      error!({ error: true, errortext: 'Unable to shorten URL' }, 400)
     end
 
   end

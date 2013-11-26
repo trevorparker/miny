@@ -1,0 +1,34 @@
+<h2 id="instructions" class="error">JavaScript is required to submit a URL for shortening.</h2>
+<form id="shortener" style="display: none;">
+    <input type="url" id="url" name="url" maxlength="1024" width="26" placeholder="http://example.com" class="input" autofocus>
+    <input type="submit" class="button" value="Shorten">
+</form>
+
+<script>
+    $(document).ready(function() {
+        $("#instructions").removeClass('error');
+        $("#instructions").html('Enter your URL, and it shall be shortened.');
+        $("#shortener").show();
+    });
+    $("#shortener").submit(function() {
+        var u = $("#url").val();
+        $.ajax({
+            url: '/v1/url',
+            data: {url: u},
+            type: 'post',
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                $("#instructions").html('<span class="error">Error: ' + errorThrown + '</span>');
+                var reply = jQuery.parseJSON(XMLHttpRequest.responseText);
+                var err = reply.errortext;
+                if (err) {
+                    $("#instructions").html('<span class="error">Error: ' + err + '</span>');
+                }
+            },
+            success: function(r) {
+                $("#instructions").html('Your shortened URL: <a href="<%= SITE_URL %>' + r.sid + '"><%= SITE_URL %>' + r.sid + '</a>');
+                $("#url").val('');
+            }
+        });
+        return false;
+    });
+</script>

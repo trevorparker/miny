@@ -13,6 +13,8 @@ class URL
     return if @url.nil?
 
     @url = "http://#{@url}" unless @url.match(%r(^https?\://))
+    return if @url.match(%r(^https?\://$)) # There's a $ -- empty URL!
+
     @sid = @redis.hget("url:#{@url}", 'sid')
     @stats = nil
 
@@ -25,11 +27,13 @@ class URL
     { error: false, sid: @sid, url: @url, stats: @stats }
   end
 
-  def expand
+  def expand(redirecting = false, user = nil)
     return if @sid.nil?
 
     @url = expand_sid(@sid)
     return if @url.nil?
+
+    record_visit(url, user) if redirecting == true && !user.nil?
 
     { error: false, sid: @sid, url: @url }
   end
@@ -59,5 +63,18 @@ class URL
 
   def expand_sid(sid)
     @redis.hget("sid:#{sid}", 'url')
+  end
+
+  def record_visit(url, user, visit_id = SecureRandom.uuid)
+    @redis.pipelined do
+      @redis.hmset(
+        "visitor:#{visit_id}", 'ip', user.ip,
+        'user_agent', user.user_agent, 'referrer', user.referrer,
+        'visited_at', Time.now.to_i
+      )
+      @redis.hincrby("url:#{url}", 'visits', 1)
+      @redis.hincrby("visits:#{url}:#{user.ip}", 'count', 1)
+      @redis.rpush("visits:#{url}", visit_id)
+    end
   end
 end

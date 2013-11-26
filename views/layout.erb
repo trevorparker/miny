@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title><%= SITE_NAME %> - <%= SITE_DESCRIPTION %></title>
+    <link rel="stylesheet" type="text/css" href="/css/reset.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/site.css"/>
+    <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;">
+    <meta name="description" content="<%= SITE_NAME %>"/>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="head">
+        <h1><a href="/"><%= SITE_NAME %></a></h1>
+    </div>
+    <div id="content" class="center">
+        <%= yield %>
+        <div id="footer">
+            <p>Powered by <a href="https://github.com/trevorparker/miny">Miny</a>.
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+@import url(https://fonts.googleapis.com/css?family=Quando);
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro);
+
+body {
+    color: rgba(25,25,25,1);
+    background-color: rgba(230,230,230,1);
+    font-family: "Source Sans Pro", Tahoma, Verdana, sans-serif;
+}
+
+h1 {
+    font-family: "Quando", Georgia, "Times New Roman", serif;
+}
+h1 a { text-decoration: none; }
+h1 { font-size: 2em; }
+h2 { font-size: 1.6em; }
+h3 { font-size: 1.4em; }
+h4 { font-size: 1.3em; }
+h5 { font-size: 1.2em; }
+h6 { font-size: 1.1em; }
+h2,h3,h4,h5,h6,p,form { padding: 0.8em 0; }
+p,blockquote,pre,table,ul,ol { line-height: 1.5em; }
+a { color: rgba(25,25,25,1); }
+
+ol,li { margin-left: 1.5em; }
+
+strong { font-weight: bold; }
+
+#head {
+    color: rgb(250,250,254);
+    background-color: rgba(10,10,25,0.75);
+    text-align: center;
+    padding-top: 1.2em;
+    padding-bottom: 1.2em;
+    -webkit-box-shadow: 0px -6px 15px -6px rgb(25,25,25) inset;
+    -moz-box-shadow: 0px -6px 15px -6px rgb(25,25,25) inset;
+    -o-box-shadow: 0px -6px 15px -6px rgb(25,25,25) inset;
+    box-shadow: 0px -6px 15px -6px rgb(25,25,25) inset;
+    -webkit-text-shadow: 0px 1px 0px rgb(20, 22, 35), 1px 1px 0px rgb(20,22,35), 0px -1px 0px rgb(100,100,130), -1px 0px 0px rgb(100,100,130);
+    -moz-text-shadow: 0px 1px 0px rgb(20, 22, 35), 1px 1px 0px rgb(20,22,35), 0px -1px 0px rgb(100,100,130), -1px 0px 0px rgb(100,100,130);
+    -o-text-shadow: 0px 1px 0px rgb(20, 22, 35), 1px 1px 0px rgb(20,22,35), 0px -1px 0px rgb(100,100,130), -1px 0px 0px rgb(100,100,130);
+    text-shadow: 0px 1px 0px rgb(20, 22, 35), 1px 1px 0px rgb(20,22,35), 0px -1px 0px rgb(100,100,130), -1px 0px 0px rgb(100,100,130);
+}
+
+#head h1 {
+    margin: 0;
+    padding: 0;
+}
+
+#head h1 a {
+    color: rgba(250,250,254,1);
+}
+
+#content {
+    max-width: 940px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1em;
+}
+
+#shortener {
+    background-color: rgba(195,200,210,1);
+    padding: 0.5em;
+}
+
+#footer {
+    font-size: 0.8em;
+    margin-top: 1em;
+}
+
+.stats {
+    width: 100%;
+}
+
+.stats th {
+    color: rgb(250,250,254);
+    background-color: rgba(10,10,25,0.75);
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.stats tr {
+    border-bottom: 1px solid #333;
+    background-color: rgb(247,247,247);
+}
+
+.stats tr:nth-child(odd) {
+    background-color: rgb(252,252,252);
+}
+
+.subtle {
+    color: rgb(180,180,200);
+}
+
+.center { text-align: center; }
+
+.tos { font-size: 0.8em; }
+
+.input, .button {
+    font-size: 1.2em;
+    border: solid 1px rgba(40,40,40,1);
+    padding: 0.4em;
+    display: inline-block;
+    -webkit-box-shadow: 0px 0px 2px 0px rgba(15,15,15,1);
+    -moz-box-shadow: 0px 0px 2px 0px rgba(15,15,15,1);
+    box-shadow: 0px 0px 2px 0px rgba(15,15,15,1);
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+.input { width: 345px; }
+.button {
+    color: rgba(240,240,240,1);
+    background-color: rgba(107,174,215,1);
+    text-shadow: 0px 1px 1px rgba(25,25,25,1);
+    background-image: linear-gradient(bottom, rgb(65,65,80) 28%, rgb(95,95,110) 64%);
+    background-image: -o-linear-gradient(bottom, rgb(65,65,80) 28%, rgb(95,95,110) 64%);
+    background-image: -moz-linear-gradient(bottom, rgb(65,65,80) 28%, rgb(95,95,110) 64%);
+    background-image: -webkit-linear-gradient(bottom, rgb(65,65,80) 28%, rgb(95,95,110) 64%);
+    background-image: -ms-linear-gradient(bottom, rgb(65,65,80) 28%, rgb(95,95,110) 64%);
+
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0.28, rgb(65,65,80)),
+        color-stop(0.64, rgb(95,95,110))
+    );
+}
+.button:hover { cursor: pointer; }
+
+.error { color: rgba(240,30,30,1); }
+
+@media (max-width: 640px) {
+    .input { max-width: 70%; }
+}
+
+@media (max-width: 450px) {
+    .input {
+        display: inline-block;
+    }
+    .button {
+        margin-top: 0.5em;
+        display: inline-block;
+    }
+}

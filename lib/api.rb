@@ -1,7 +1,7 @@
 require 'grape'
 require 'redis'
-require './lib/url'
-require './lib/user'
+require_relative 'url'
+require_relative 'user'
 
 # Miny API endpoint
 class API < Grape::API

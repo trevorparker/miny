@@ -1,10 +1,13 @@
-require_relative 'config'
 require 'sinatra'
-require './lib/url'
-require './lib/user'
+require_relative 'url'
+require_relative 'user'
 
 # Miny main app
 class App < Sinatra::Base
+  configure do
+    set :views, File.dirname(__FILE__) + '/../views'
+  end
+
   get '/' do
     erb :'index/index'
   end

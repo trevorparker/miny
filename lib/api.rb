@@ -3,6 +3,9 @@ require 'redis'
 require_relative 'url'
 require_relative 'user'
 
+env = ENV['RACK_ENV'] || 'test'
+require File.join(File.dirname(__FILE__), '..', "config/environments/#{env}")
+
 # Miny API endpoint
 class API < Grape::API
   version 'v1', using: :path
@@ -10,7 +13,7 @@ class API < Grape::API
 
   helpers do
     def redis
-      @redis ||= Redis.new(port: 6379, db: 1)
+      @redis ||= Redis.new(port: REDIS_PORT, db: REDIS_DB)
     end
 
     def user

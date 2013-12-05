@@ -1,17 +1,11 @@
-require File.dirname(__FILE__) + '/../lib/api.rb'
-
-require 'rspec'
-require 'rack/test'
-
-RSpec.configure do |conf|
-  conf.include Rack::Test::Methods
-end
-
-def app
-  API
-end
+require 'spec_helper'
+require_relative '../../lib/api'
 
 describe API do
+  def app
+    API
+  end
+
   requests = 0
   describe 'GET /v1/spec' do
     it 'responds with entries for spec, shorten, and expand' do

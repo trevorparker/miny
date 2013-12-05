@@ -8,6 +8,7 @@ require File.join(File.dirname(__FILE__), '..', "config/environments/#{env}")
 # Miny main app
 class App < Sinatra::Base
   configure do
+    set :public_folder, File.join(File.dirname(__FILE__), '..', 'public')
     set :views, File.join(File.dirname(__FILE__), '..', 'views')
   end
 

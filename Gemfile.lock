@@ -45,6 +45,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rake (0.9.6)
     redis (3.0.6)
     rspec (2.14.1)
       rspec-core (~> 2.14.0)
@@ -75,6 +76,7 @@ DEPENDENCIES
   grape
   json
   rack-test
+  rake
   redis
   rspec
   sinatra

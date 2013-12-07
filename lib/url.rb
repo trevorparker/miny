@@ -16,7 +16,6 @@ class URL
     return if @url.match(%r(^https?\://$)) # There's a $ -- empty URL!
 
     @sid = @redis.hget("url:#{@url}", 'sid')
-    @stats = nil
 
     if @sid.nil?
       @sid = generate_sid

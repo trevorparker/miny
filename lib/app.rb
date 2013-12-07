@@ -13,7 +13,7 @@ class App < Sinatra::Base
   end
 
   get '/' do
-    erb :'index/index'
+    erb :index
   end
 
   get '/:sid' do

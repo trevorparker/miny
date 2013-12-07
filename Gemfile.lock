@@ -7,6 +7,7 @@ GEM
       multi_json (~> 1.3)
       thread_safe (~> 0.1)
       tzinfo (~> 0.3.37)
+    ast (1.1.0)
     atomic (1.1.14)
     axiom-types (0.0.5)
       descendants_tracker (~> 0.0.1)
@@ -36,6 +37,10 @@ GEM
     minitest (4.7.5)
     multi_json (1.8.2)
     multi_xml (0.5.5)
+    parser (2.0.0)
+      ast (~> 1.1)
+      slop (~> 3.4, >= 3.4.5)
+    powerpack (0.0.9)
     rack (1.5.2)
     rack-accept (0.4.5)
       rack (>= 0.4)
@@ -45,6 +50,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    rainbow (1.1.4)
     rake (0.9.6)
     redis (3.0.6)
     rspec (2.14.1)
@@ -55,10 +61,15 @@ GEM
     rspec-expectations (2.14.4)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.14.4)
+    rubocop (0.15.0)
+      parser (~> 2.0)
+      powerpack (~> 0.0.6)
+      rainbow (>= 1.1.4)
     sinatra (1.4.4)
       rack (~> 1.4)
       rack-protection (~> 1.4)
       tilt (~> 1.3, >= 1.3.4)
+    slop (3.4.7)
     thread_safe (0.1.3)
       atomic
     tilt (1.4.1)
@@ -79,4 +90,5 @@ DEPENDENCIES
   rake
   redis
   rspec
+  rubocop
   sinatra

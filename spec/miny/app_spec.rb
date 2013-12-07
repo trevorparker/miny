@@ -4,6 +4,8 @@ require_relative '../../lib/app'
 require_relative '../../lib/url'
 
 describe App do
+  # rubocop:disable Void
+
   def app
     App
   end

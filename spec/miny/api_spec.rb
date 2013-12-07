@@ -2,6 +2,8 @@ require 'spec_helper'
 require_relative '../../lib/api'
 
 describe API do
+  # rubocop:disable Void
+
   def app
     API
   end
